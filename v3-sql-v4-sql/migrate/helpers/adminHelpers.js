@@ -49,6 +49,7 @@ async function migrateAdminPermissions() {
       .offset(page * BATCH_SIZE);
     const migratedItems = migrateItems(items, ({ role, ...item }) => ({
       ...item,
+      fields: isPGSQL ? JSON.stringify(item.fields) : item.fields,
       action: migrateUids(item.action),
       subject: migrateSubject(item.subject),
       properties: migrateProperties(item.properties),
