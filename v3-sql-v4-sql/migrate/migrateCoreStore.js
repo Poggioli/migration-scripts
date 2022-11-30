@@ -35,10 +35,37 @@ async function migrateTables() {
   await dbV4(resolveDestTableName(destination)).del();
   for (var page = 0; page * BATCH_SIZE < count; page++) {
     console.log(`${source} batch #${page + 1}`);
-    const items = await sourceSelect
-      .clone()
-      .limit(BATCH_SIZE)
-      .offset(page * BATCH_SIZE);
+    const itemsPaginated = await sourceSelect
+    .clone()
+    .limit(BATCH_SIZE)
+    .offset(page * BATCH_SIZE);
+
+    const items = itemsPaginated.map((item) => {
+      if (item.key.includes('::')) {
+        const value = JSON.parse(item.value);
+        let uidObj = {}
+
+        if(value.uid) {
+          uidObj = {
+            uid: value.uid.replace("extranet-landingpage", "ext-ldpg")
+          }
+        }
+
+        const newValue = {
+          ...value,
+          ...uidObj
+        }
+
+        return {
+          ...item,
+          key: item.key.replace("extranet-landingpage", "ext-ldpg"),
+          value: JSON.stringify(newValue)
+        }
+      }
+
+      return item
+    })
+
     const migratedItems = migrateItems(items, (item) => {
       const replacedValue = item.value
         .replace(/"defaultSortBy":"type"/g, `"defaultSortBy":"action"`)

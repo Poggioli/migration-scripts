@@ -15,11 +15,34 @@ const processedTables = [];
 async function migrateTables(tables) {
   console.log('Migrating components');
 
-  const modelsDefs = await dbV3(resolveSourceTableName('core_store')).where(
+  const models = await dbV3(resolveSourceTableName('core_store')).where(
     'key',
     'like',
     'model_def_%'
-  );
+  )
+
+  const modelsDefs = models.map((model) => {
+    if (!model.key.includes('::')) {
+      const value = JSON.parse(model.value);
+      const newValue = {
+        ...value,
+        collectionName: value.collectionName.replace("_extranet_landingpage_", "_ext_ldpg_"),
+        uid: value.uid.replace("extranet-landingpage", "ext-ldpg")
+      }
+
+      return {
+        ...model,
+        key: model.key.replace("extranet-landingpage", "ext-ldpg"),
+        value: JSON.stringify(newValue)
+      }
+    }
+
+    return model
+  });
+
+  // console.log(modelsDefs)
+
+  // throw new Error ('bla')
 
   const componentsToMigrate = modelsDefs
     .filter((item) => {
