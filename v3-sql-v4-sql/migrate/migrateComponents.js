@@ -141,8 +141,8 @@ async function migrateTables(tables) {
     await migrate(table, table, (item) => {
       const itemNew = {
         ...item,
-        entity_id: item[`${tableIdColumn}_id`],
-        component_type: componentsMap[item.component_type] ?? item.component_type,
+        entity_id: item[`${tableIdColumn.replace("_ext_ldpg_", "_extranet_landingpage_")}_id`],
+        component_type: componentsMap[item.component_type.replace("_extranet_landingpage_", "_ext_ldpg_")] ?? item.component_type.replace("_extranet_landingpage_", "_ext_ldpg_"),
       };
 
       return omit(itemNew, [`${tableIdColumn}_id`]);
