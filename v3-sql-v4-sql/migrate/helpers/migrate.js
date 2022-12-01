@@ -11,12 +11,16 @@ async function migrate(source, destination, itemMapper = undefined) {
       (await dbV4.raw(`SHOW TABLES LIKE "%${destination}%";`))[0].length === 0;
 
     if (sourceNotExists) {
-      console.log(`\n\n##########\nSOURCE TABLE ${source} DOES NOT EXISTS\n##########\n`);
+      console.log('\n\n##########')
+      console.log(`SOURCE TABLE ${source} DOES NOT EXISTS`);
+      console.log('##########\n');
       return false;
     }
 
     if (destinationNotExists) {
-      console.log(`\n\n##########\nDESTINATION TABLE ${destination} DOES NOT EXISTS\n##########\n`);
+      console.log('\n\n##########')
+      console.log(`DESTINATION TABLE ${destination} DOES NOT EXISTS`);
+      console.log('##########\n');
       return false;
     }
   }
@@ -45,12 +49,16 @@ async function migrate(source, destination, itemMapper = undefined) {
       )['count(*)'] === 0;
 
     if (sourceNotExists) {
-      console.log(`\n\n##########\nSOURCE TABLE ${source} DOES NOT EXISTS\n##########\n`);
+      console.log('\n\n##########')
+      console.log(`SOURCE TABLE ${source} DOES NOT EXISTS`);
+      console.log('##########\n');
       return false;
     }
 
     if (destinationNotExists) {
-      console.log(`\n\n##########\nDESTINATION TABLE ${destination} DOES NOT EXISTS\n##########\n`);
+      console.log('\n\n##########')
+      console.log(`DESTINATION TABLE ${destination} DOES NOT EXISTS`);
+      console.log('##########\n');
       return false;
     }
   }
@@ -77,12 +85,16 @@ async function migrate(source, destination, itemMapper = undefined) {
       ).length === 0;
 
     if (sourceNotExists) {
-      console.log(`\n\n##########\nSOURCE TABLE ${source} DOES NOT EXISTS\n##########\n`);
+      console.log('\n\n##########')
+      console.log(`SOURCE TABLE ${source} DOES NOT EXISTS`);
+      console.log('##########\n');
       return false;
     }
 
     if (destinationNotExists) {
-      console.log(`\n\n##########\nDESTINATION TABLE ${destination} DOES NOT EXISTS\n##########\n`);
+      console.log('\n\n##########')
+      console.log(`DESTINATION TABLE ${destination} DOES NOT EXISTS`);
+      console.log('##########\n');
       return false;
     }
   }

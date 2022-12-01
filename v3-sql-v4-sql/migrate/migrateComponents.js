@@ -40,10 +40,6 @@ async function migrateTables(tables) {
     return model
   });
 
-  // console.log(modelsDefs)
-
-  // throw new Error ('bla')
-
   const componentsToMigrate = modelsDefs
     .filter((item) => {
       if (item.key.includes('::')) {

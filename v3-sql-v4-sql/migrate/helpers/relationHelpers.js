@@ -168,6 +168,10 @@ async function migrateRelations(tables, relations) {
             t.endsWith(`__${relation.model}_${relation.attribute}`))
       );
 
+      if(relation.table === 'extranet_categories_brands_links' && v3RelationTables.find((v) => v === 'extranet_brands_extranet_landingpages_categories__extranet_cate')) {
+        sourceTable = v3RelationTables.find((v) => v === 'extranet_brands_extranet_landingpages_categories__extranet_cate')
+      }
+
       if (sourceTable) {
         await migrateManyToManyRelation(relation, sourceTable);
       }
