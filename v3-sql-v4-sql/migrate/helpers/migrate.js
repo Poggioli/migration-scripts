@@ -5,6 +5,11 @@ const { pick } = require('lodash');
 const { resolveDestTableName, resolveSourceTableName } = require('./tableNameHelpers');
 
 async function migrate(source, destination, itemMapper = undefined) {
+
+  if(destination === 'components_ext_ldpg_list_contacts') {
+    await migrate('components_ext_ldpg_list_contacts', 'components_ext_ldpg_list_contacts_collection')
+  }
+
   if (isMYSQL) {
     const sourceNotExists = (await dbV3.raw(`SHOW TABLES LIKE '%${source}%';`))[0].length === 0;
     const destinationNotExists =
@@ -67,6 +72,10 @@ async function migrate(source, destination, itemMapper = undefined) {
     //  SELECT FROM information_schema.tables
     //  WHERE  table_schema = 'schema_name'
     //  AND    table_name   = 'table_name'
+
+    if(destination === 'components_ext_ldpg_list_contacts_components') {
+      destination = 'components_ext_ldpg_list_contacts_collection_components';
+    }
 
     const sourceNotExists =
       (
@@ -139,7 +148,20 @@ async function migrate(source, destination, itemMapper = undefined) {
     });
 
     const migratedItems = migrateItems(withParsedJsonFields, itemMapper).map((item) => {
-      const filteredItems = pick(item, tableColumns);
+
+      let filteredItems;
+
+      if(destination === 'components_ext_ldpg_contents') {
+        item.content_title = item.content_title ?? item.title;
+        filteredItems = pick(item, tableColumns);
+      } else if (destination === 'components_ext_ldpg_buttons_and_links_modal_links') {
+        item.buttons_and_links_id = item.buttons_and_link_id
+        filteredItems = pick(item, tableColumns);
+      } else if (destination === 'components_ext_ldpg_list_contacts_collection') {
+        filteredItems = pick(item, [...tableColumns, 'sub_title']);
+      } else {
+        filteredItems = pick(item, tableColumns);
+      }
 
       if (Object.keys(item).length !== Object.keys(filteredItems).length) {
         const filteredColumns = Object.keys(item).filter(function (obj) {
@@ -148,11 +170,11 @@ async function migrate(source, destination, itemMapper = undefined) {
 
         console.log(
           'WARNING - items of ' + destination + ' was filtered ' + JSON.stringify(filteredColumns)
-        );
-      }
+          );
+        }
 
-      return filteredItems;
-    });
+        return filteredItems;
+      });
 
     if (migratedItems.length > 0) {
       await dbV4(resolveDestTableName(destination)).insert(migratedItems);
